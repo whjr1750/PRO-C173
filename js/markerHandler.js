@@ -9,8 +9,10 @@ AFRAME.registerComponent("markerhandler", {
     var dishes = await this.getDishes();
 
     this.el.addEventListener("markerFound", () => {
-      var markerId = this.el.id;
-      this.handleMarkerFound(dishes, markerId);
+      if (tableNumber !== null) {
+        var markerId = this.el.id;
+        this.handleMarkerFound(dishes, markerId);
+      }
     });
 
     this.el.addEventListener("markerLost", () => {
@@ -65,6 +67,29 @@ AFRAME.registerComponent("markerhandler", {
         buttons: false
       });
     } else {
+      // make model visible
+      var model = document.querySelector(`#model-${dish.id}`);
+
+      model.setAttribute("visible", true);
+
+      // make ingredients Container visible
+      var ingredientsContainer = document.querySelector(
+        `#main-plane-${dish.id}`
+      );
+      ingredientsContainer.setAttribute("visible", true);
+
+      // make Price Plane visible
+      var pricePlane = document.querySelector(`#price-plane-${dish.id}`);
+      pricePlane.setAttribute("visible", true);
+
+      // make Rating Plane visible
+      var ratingPlane = document.querySelector(`#rating-plane-${dish.id}`);
+      ratingPlane.setAttribute("visible", true);
+
+      // make review Plane visible
+      var reviewPlane = document.querySelector(`#review-plane-${dish.id}`);
+      reviewPlane.setAttribute("visible", true);
+
       var model = document.querySelector(`#model-${dish.id}`);
       model.setAttribute("position", dish.model_geometry.position);
       model.setAttribute("rotation", dish.model_geometry.rotation);

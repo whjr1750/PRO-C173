@@ -36,6 +36,7 @@ AFRAME.registerComponent("create-markers", {
         model.setAttribute("scale", dish.scale);
         model.setAttribute("gltf-model", `url(${dish.model_url})`);
         model.setAttribute("gesture-handler", {});
+        model.setAttribute("visible", false);
         marker.appendChild(model);
 
         // Ingredients Container
@@ -45,6 +46,7 @@ AFRAME.registerComponent("create-markers", {
         mainPlane.setAttribute("rotation", { x: -90, y: 0, z: 0 });
         mainPlane.setAttribute("width", 1.7);
         mainPlane.setAttribute("height", 1.5);
+        mainPlane.setAttribute("visible", false);
         marker.appendChild(mainPlane);
 
         // Dish title background plane
@@ -86,7 +88,7 @@ AFRAME.registerComponent("create-markers", {
         });
         mainPlane.appendChild(ingredients);
 
-        // Diish Price
+        // Dish Price
         var pricePlane = document.createElement("a-image");
         pricePlane.setAttribute("id", `price-plane-${dish.id}`);
         pricePlane.setAttribute(
@@ -97,6 +99,7 @@ AFRAME.registerComponent("create-markers", {
         pricePlane.setAttribute("height", 0.8);
         pricePlane.setAttribute("position", { x: -1.3, y: 0, z: 0.3 });
         pricePlane.setAttribute("rotation", { x: -90, y: 0, z: 0 });
+        pricePlane.setAttribute("visible", false);
 
         var price = document.createElement("a-entity");
         price.setAttribute("id", `price-${dish.id}`);
@@ -107,11 +110,74 @@ AFRAME.registerComponent("create-markers", {
           color: "white",
           width: 3,
           align: "center",
-          value: `Only\n ₹${dish.price}`
+          value: `Only\n $${dish.price}`
         });
 
         pricePlane.appendChild(price);
         marker.appendChild(pricePlane);
+
+        // Dish Rating
+        var ratingPlane = document.createElement("a-entity");
+        ratingPlane.setAttribute("id", `rating-plane-${dish.id}`);
+        ratingPlane.setAttribute("position", { x: -3, y: 0.05, z: 0.65 });
+        ratingPlane.setAttribute("geometry", {
+          primitive: "plane",
+          width: 1.6,
+          height: 0.3
+        });
+
+        ratingPlane.setAttribute("material", {
+          color: "#F0C30F"
+        });
+        ratingPlane.setAttribute("rotation", { x: -90, y: 0, z: 0 });
+        ratingPlane.setAttribute("visible", false);
+
+        // Ratings
+        var rating = document.createElement("a-entity");
+        rating.setAttribute("id", `rating-${dish.id}`);
+        rating.setAttribute("position", { x: 0, y: 0.05, z: 0.1 });
+        rating.setAttribute("rotation", { x: 0, y: 0, z: 0 });
+        rating.setAttribute("text", {
+          font: "mozillavr",
+          color: "white",
+          width: 2.4,
+          align: "center",
+          value: `Customer Rating: ${dish.last_rating}`
+        });
+
+        ratingPlane.appendChild(rating);
+        marker.appendChild(ratingPlane);
+
+        // Dish review
+        var reviewPlane = document.createElement("a-entity");
+        reviewPlane.setAttribute("id", `review-plane-${dish.id}`);
+        reviewPlane.setAttribute("position", { x: -3, y: 0.05, z: 1.2 });
+        reviewPlane.setAttribute("geometry", {
+          primitive: "plane",
+          width: 1.6,
+          height: 0.7
+        });
+
+        reviewPlane.setAttribute("material", {
+          color: "#F0C30F"
+        });
+        reviewPlane.setAttribute("rotation", { x: -90, y: 0, z: 0 });
+        reviewPlane.setAttribute("visible", false);
+
+        var review = document.createElement("a-entity");
+        review.setAttribute("id", `review-${dish.id}`);
+        review.setAttribute("position", { x: 0, y: 0.05, z: 0.1 });
+        review.setAttribute("rotation", { x: 0, y: 0, z: 0 });
+        review.setAttribute("text", {
+          font: "mozillavr",
+          color: "white",
+          width: 2.4,
+          align: "center",
+          value: `Customer Review: \n${dish.last_review}`
+        });
+
+        reviewPlane.appendChild(review);
+        marker.appendChild(reviewPlane);
       }
     });
   },
