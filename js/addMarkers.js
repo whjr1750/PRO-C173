@@ -92,8 +92,7 @@ AFRAME.registerComponent("create-markers", {
         var pricePlane = document.createElement("a-image");
         pricePlane.setAttribute("id", `price-plane-${dish.id}`);
         pricePlane.setAttribute(
-          "src",
-          "https://raw.githubusercontent.com/whitehatjr/menu-card-app/main/black-circle.png"
+          "src", "https://raw.githubusercontent.com/whitehatjr/menu-card-app/main/black-circle.png"
         );
         pricePlane.setAttribute("width", 0.8);
         pricePlane.setAttribute("height", 0.8);
@@ -176,7 +175,7 @@ AFRAME.registerComponent("create-markers", {
           align: "center",
           value: `Customer Review: \n${dish.last_review}`
         });
-
+        
         reviewPlane.appendChild(review);
         marker.appendChild(reviewPlane);
       }

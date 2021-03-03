@@ -54,7 +54,7 @@ AFRAME.registerComponent("markerhandler", {
       "saturday"
     ];
 
-    // Changing Model scale to initial scale
+    
     var dish = dishes.filter(dish => dish.id === markerId)[0];
 
     if (dish.unavailable_days.includes(days[todaysDay])) {
@@ -68,28 +68,27 @@ AFRAME.registerComponent("markerhandler", {
     } else {
       // make model visible
       var model = document.querySelector(`#model-${dish.id}`);
-
       model.setAttribute("visible", true);
 
-      // make ingredients Container visible
+      // Make ingredients Container visible
       var ingredientsContainer = document.querySelector(
         `#main-plane-${dish.id}`
       );
       ingredientsContainer.setAttribute("visible", true);
 
-      // make Price Plane visible
+      // Make Price Plane visible
       var pricePlane = document.querySelector(`#price-plane-${dish.id}`);
       pricePlane.setAttribute("visible", true);
 
-      // make Rating Plane visible
+      // Make Rating Plane visible
       var ratingPlane = document.querySelector(`#rating-plane-${dish.id}`);
-      ratingPlane.setAttribute("visible", true);
+      ratingPlane.setAttribute("visible", false);
 
-      // make review Plane visible
+      // Make review Plane visible
       var reviewPlane = document.querySelector(`#review-plane-${dish.id}`);
-      reviewPlane.setAttribute("visible", true);
+      reviewPlane.setAttribute("visible", false);
 
-      var model = document.querySelector(`#model-${dish.id}`);
+      // Changing Model scale to initial scale
       model.setAttribute("position", dish.model_geometry.position);
       model.setAttribute("rotation", dish.model_geometry.rotation);
       model.setAttribute("scale", dish.model_geometry.scale);
@@ -285,23 +284,24 @@ AFRAME.registerComponent("markerhandler", {
     // Getting Table Number
     var tNumber;
     tableNumber <= 9 ? (tNumber = `T0${tableNumber}`) : `T${tableNumber}`;
-
+    
     // Getting Order Summary from database
     var orderSummary = await this.getOrderSummary(tNumber);
 
-    var currentOrders = Object.keys(orderSummary.current_orders);
+    var currentOrders = Object.keys(orderSummary.current_orders);    
 
-    if (currentOrders.length > 0) {
+    if (currentOrders.length > 0 && currentOrders==dish.id) {
+      
       // Close Modal
       document.getElementById("rating-modal-div").style.display = "flex";
       document.getElementById("rating-input").value = "0";
       document.getElementById("feedback-input").value = "";
 
+      //Submit button click event
       var saveRatingButton = document.getElementById("save-rating-button");
 
       saveRatingButton.addEventListener("click", () => {
         document.getElementById("rating-modal-div").style.display = "none";
-
         //Get the input value(Review & Rating)
         var rating = document.getElementById("rating-input").value;
         var feedback = document.getElementById("feedback-input").value;
@@ -325,9 +325,7 @@ AFRAME.registerComponent("markerhandler", {
             });
           });
       });
-
-    }
-    else{
+    } else{
       swal({
         icon: "warning",
         title: "Oops!",
@@ -336,7 +334,6 @@ AFRAME.registerComponent("markerhandler", {
         buttons: false
       });
     }
-
 
   },
   handleMarkerLost: function () {
