@@ -1,7 +1,7 @@
 var tableNumber = null;
 
 AFRAME.registerComponent("markerhandler", {
-  init: async function() {
+  init: async function () {
     if (tableNumber === null) {
       this.askTableNumber();
     }
@@ -20,9 +20,8 @@ AFRAME.registerComponent("markerhandler", {
     });
   },
 
-  askTableNumber: function() {
-    var iconUrl =
-      "https://raw.githubusercontent.com/whitehatjr/menu-card-app/main/hunger.png";
+  askTableNumber: function () {
+    var iconUrl = "https://raw.githubusercontent.com/whitehatjr/menu-card-app/main/hunger.png";
 
     swal({
       title: "Welcome to Hunger!!",
@@ -40,8 +39,8 @@ AFRAME.registerComponent("markerhandler", {
     });
   },
 
-  handleMarkerFound: function(dishes, markerId) {
-    // Getting todays day
+  handleMarkerFound: function (dishes, markerId) {
+    // Getting today's day
     var todaysDate = new Date();
     var todaysDay = todaysDate.getDay();
     // Sunday - Saturday : 0 - 6
@@ -101,7 +100,7 @@ AFRAME.registerComponent("markerhandler", {
 
       var ratingButton = document.getElementById("rating-button");
       var orderButtton = document.getElementById("order-button");
-      var orderSummeryButtton = document.getElementById("order-summery-button");
+      var orderSummaryButtton = document.getElementById("order-summary-button");
       var payButton = document.getElementById("pay-button");
 
       // Handling Click Events
@@ -121,14 +120,15 @@ AFRAME.registerComponent("markerhandler", {
         });
       });
 
-      orderSummeryButtton.addEventListener("click", () =>
-        this.handleOrderSummery()
+      orderSummaryButtton.addEventListener("click", () =>
+        this.handleOrderSummary()
       );
 
       payButton.addEventListener("click", () => this.handlePayment());
     }
   },
-  handleOrder: function(tNumber, dish) {
+  
+  handleOrder: function (tNumber, dish) {
     // Reading currnt table order details
     firebase
       .firestore()
@@ -166,7 +166,7 @@ AFRAME.registerComponent("markerhandler", {
           .update(details);
       });
   },
-  getDishes: async function() {
+  getDishes: async function () {
     return await firebase
       .firestore()
       .collection("dishes")
@@ -175,7 +175,7 @@ AFRAME.registerComponent("markerhandler", {
         return snap.docs.map(doc => doc.data());
       });
   },
-  getOrderSummery: async function(tNumber) {
+  getOrderSummary: async function (tNumber) {
     return await firebase
       .firestore()
       .collection("tables")
@@ -183,22 +183,25 @@ AFRAME.registerComponent("markerhandler", {
       .get()
       .then(doc => doc.data());
   },
-  handleOrderSummery: async function() {
+  handleOrderSummary: async function () {
     // Changing modal div visibility
     var modalDiv = document.getElementById("modal-div");
     modalDiv.style.display = "flex";
+
+    var tableBodyTag = document.getElementById("bill-table-body");
+
+    // Removing old tr data
+    tableBodyTag.innerHTML = "";
+
     // Getting Table Number
     var tNumber;
     tableNumber <= 9 ? (tNumber = `T0${tableNumber}`) : `T${tableNumber}`;
 
-    // Getting Order Summery from database
-    var orderSummery = await this.getOrderSummery(tNumber);
+    // Getting Order Summary from database
+    var orderSummary = await this.getOrderSummary(tNumber);
 
-    var tableBodyTag = document.getElementById("bill-table-body");
-    // Removing old tr data
-    tableBodyTag.innerHTML = "";
+    var currentOrders = Object.keys(orderSummary.current_orders);
 
-    var currentOrders = Object.keys(orderSummery.current_orders);
     currentOrders.map(i => {
       var tr = document.createElement("tr");
       var item = document.createElement("td");
@@ -206,14 +209,14 @@ AFRAME.registerComponent("markerhandler", {
       var quantity = document.createElement("td");
       var subtotal = document.createElement("td");
 
-      item.innerHTML = orderSummery.current_orders[i].item;
-      price.innerHTML = "₹" + orderSummery.current_orders[i].price;
+      item.innerHTML = orderSummary.current_orders[i].item;
+      price.innerHTML = "$" + orderSummary.current_orders[i].price;
       price.setAttribute("class", "text-center");
 
-      quantity.innerHTML = orderSummery.current_orders[i].quantity;
+      quantity.innerHTML = orderSummary.current_orders[i].quantity;
       quantity.setAttribute("class", "text-center");
 
-      subtotal.innerHTML = "₹" + orderSummery.current_orders[i].subtotal;
+      subtotal.innerHTML = "$" + orderSummary.current_orders[i].subtotal;
       subtotal.setAttribute("class", "text-center");
 
       tr.appendChild(item);
@@ -240,7 +243,7 @@ AFRAME.registerComponent("markerhandler", {
 
     var td4 = document.createElement("td");
     td1.setAttribute("class", "no-line text-right");
-    td4.innerHTML = "₹" + orderSummery.total_bill;
+    td4.innerHTML = "$" + orderSummary.total_bill;
 
     totalTr.appendChild(td1);
     totalTr.appendChild(td2);
@@ -249,7 +252,7 @@ AFRAME.registerComponent("markerhandler", {
 
     tableBodyTag.appendChild(totalTr);
   },
-  handlePayment: function() {
+  handlePayment: function () {
     // Close Modal
     document.getElementById("modal-div").style.display = "none";
 
@@ -277,38 +280,66 @@ AFRAME.registerComponent("markerhandler", {
       });
   },
 
-  handleRatings: function(dish) {
-    // Close Modal
-    document.getElementById("rating-modal-div").style.display = "flex";
-    document.getElementById("rating-input").value = "0";
-    document.getElementById("feedback-input").value = "";
+  handleRatings: async function (dish) {
 
-    var saveRatingButton = document.getElementById("save-rating-button");
-    saveRatingButton.addEventListener("click", () => {
-      document.getElementById("rating-modal-div").style.display = "none";
-      var rating = document.getElementById("rating-input").value;
-      var feedback = document.getElementById("feedback-input").value;
+    // Getting Table Number
+    var tNumber;
+    tableNumber <= 9 ? (tNumber = `T0${tableNumber}`) : `T${tableNumber}`;
 
-      firebase
-        .firestore()
-        .collection("dishes")
-        .doc(dish.id)
-        .update({
-          last_review: feedback,
-          last_rating: rating
-        })
-        .then(() => {
-          swal({
-            icon: "success",
-            title: "Thanks For Rating!",
-            text: "We Hope You Like Dish !!",
-            timer: 2500,
-            buttons: false
+    // Getting Order Summary from database
+    var orderSummary = await this.getOrderSummary(tNumber);
+
+    var currentOrders = Object.keys(orderSummary.current_orders);
+
+    if (currentOrders.length > 0) {
+      // Close Modal
+      document.getElementById("rating-modal-div").style.display = "flex";
+      document.getElementById("rating-input").value = "0";
+      document.getElementById("feedback-input").value = "";
+
+      var saveRatingButton = document.getElementById("save-rating-button");
+
+      saveRatingButton.addEventListener("click", () => {
+        document.getElementById("rating-modal-div").style.display = "none";
+
+        //Get the input value(Review & Rating)
+        var rating = document.getElementById("rating-input").value;
+        var feedback = document.getElementById("feedback-input").value;
+
+        //Update db
+        firebase
+          .firestore()
+          .collection("dishes")
+          .doc(dish.id)
+          .update({
+            last_review: feedback,
+            last_rating: rating
+          })
+          .then(() => {
+            swal({
+              icon: "success",
+              title: "Thanks For Rating!",
+              text: "We Hope You Like Dish !!",
+              timer: 2500,
+              buttons: false
+            });
           });
-        });
-    });
+      });
+
+    }
+    else{
+      swal({
+        icon: "warning",
+        title: "Oops!",
+        text: "No dish found to give ratings!!",
+        timer: 2500,
+        buttons: false
+      });
+    }
+
+
   },
-  handleMarkerLost: function() {
+  handleMarkerLost: function () {
     // Changing button div visibility
     var buttonDiv = document.getElementById("button-div");
     buttonDiv.style.display = "none";

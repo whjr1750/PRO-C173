@@ -1,5 +1,5 @@
 AFRAME.registerComponent("create-markers", {
-  init: async function() {
+  init: async function () {
     var mainScene = document.querySelector("#main-scene");
     var dishes = await this.getDishes();
     dishes.map(dish => {
@@ -13,7 +13,7 @@ AFRAME.registerComponent("create-markers", {
       marker.setAttribute("markerhandler", {});
       mainScene.appendChild(marker);
 
-      // Getting todays day
+      // Getting today's day
       var todaysDate = new Date();
       var todaysDay = todaysDate.getDay();
       // Sunday - Saturday : 0 - 6
@@ -116,13 +116,13 @@ AFRAME.registerComponent("create-markers", {
         pricePlane.appendChild(price);
         marker.appendChild(pricePlane);
 
-        // Dish Rating
+        // Dish Rating plane
         var ratingPlane = document.createElement("a-entity");
         ratingPlane.setAttribute("id", `rating-plane-${dish.id}`);
-        ratingPlane.setAttribute("position", { x: -3, y: 0.05, z: 0.65 });
+        ratingPlane.setAttribute("position", { x: 2, y: 0, z: 0.5 });
         ratingPlane.setAttribute("geometry", {
           primitive: "plane",
-          width: 1.6,
+          width: 1.5,
           height: 0.3
         });
 
@@ -139,7 +139,7 @@ AFRAME.registerComponent("create-markers", {
         rating.setAttribute("rotation", { x: 0, y: 0, z: 0 });
         rating.setAttribute("text", {
           font: "mozillavr",
-          color: "white",
+          color: "black",
           width: 2.4,
           align: "center",
           value: `Customer Rating: ${dish.last_rating}`
@@ -148,14 +148,14 @@ AFRAME.registerComponent("create-markers", {
         ratingPlane.appendChild(rating);
         marker.appendChild(ratingPlane);
 
-        // Dish review
+        // Dish review plane
         var reviewPlane = document.createElement("a-entity");
         reviewPlane.setAttribute("id", `review-plane-${dish.id}`);
-        reviewPlane.setAttribute("position", { x: -3, y: 0.05, z: 1.2 });
+        reviewPlane.setAttribute("position", { x: 2, y: 0, z: 0 });
         reviewPlane.setAttribute("geometry", {
           primitive: "plane",
-          width: 1.6,
-          height: 0.7
+          width: 1.5,
+          height: 0.5
         });
 
         reviewPlane.setAttribute("material", {
@@ -164,13 +164,14 @@ AFRAME.registerComponent("create-markers", {
         reviewPlane.setAttribute("rotation", { x: -90, y: 0, z: 0 });
         reviewPlane.setAttribute("visible", false);
 
+        // Dish review
         var review = document.createElement("a-entity");
         review.setAttribute("id", `review-${dish.id}`);
         review.setAttribute("position", { x: 0, y: 0.05, z: 0.1 });
         review.setAttribute("rotation", { x: 0, y: 0, z: 0 });
         review.setAttribute("text", {
           font: "mozillavr",
-          color: "white",
+          color: "black",
           width: 2.4,
           align: "center",
           value: `Customer Review: \n${dish.last_review}`
@@ -181,7 +182,7 @@ AFRAME.registerComponent("create-markers", {
       }
     });
   },
-  getDishes: async function() {
+  getDishes: async function () {
     return await firebase
       .firestore()
       .collection("dishes")
