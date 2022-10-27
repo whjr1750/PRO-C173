@@ -82,11 +82,11 @@ AFRAME.registerComponent("markerhandler", {
 
       // Make Rating Plane visible
       var ratingPlane = document.querySelector(`#rating-plane-${dish.id}`);
-      ratingPlane.setAttribute("visible", false);
+      ratingPlane.setAttribute("visible", true);
 
       // Make review Plane visible
       var reviewPlane = document.querySelector(`#review-plane-${dish.id}`);
-      reviewPlane.setAttribute("visible", false);
+      reviewPlane.setAttribute("visible", true);
 
       // Changing Model scale to initial scale
       model.setAttribute("position", dish.model_geometry.position);
